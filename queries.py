@@ -37,6 +37,16 @@ class SocialNetwork:
         self.cursor.execute("INSERT INTO Likes (account_id, post_id) VALUES (?, ?)", (account_id, post_id))
         self.conn.commit()
         print(string(account_id) + " liked the post " string(post_id))
+        
+    def create_mute(self, muter_id, muted_id):
+        self.cursor.execute("INSERT INTO Mutes (muter_id, muting_id) VALUES (?, ?)", (muter_id, muted_id)
+        self.conn.commit()
+        print(string(muter_id) + " muted " string(muted_id))
+        
+    def create_follow(self, follower_id, followed_id):
+        self.cursor.execute("INSERT INTO Followers (follower_id, following_id) VALUES (?, ?)", (follower_id, followed_id)
+        self.conn.commit()
+        print(string(follower_id) + " followed " + string(followed_id)
 
     def list_users(self):
         self.cursor.execute("SELECT * FROM Users")
