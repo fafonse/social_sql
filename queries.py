@@ -60,5 +60,10 @@ class SocialNetwork:
         for account in accounts:
             print(account)
 
+    def user_feed(self, account_id): # excludes mutes and orders by likes
+        self.cursor.execute("SELECT * FROM Posts JOIN Likes USING(post_id) ORDER BY COUNT(Likes.post_id) EXCEPT SELECT * From Posts NATURAL JOIN Mutes USING muting_id = post_id AND muter_id = (account_id) VALUES (?)", (account_id))
+        feed = self.cursor.fetchall()
+        return feed
+    
     def close(self):
         self.conn.close()
