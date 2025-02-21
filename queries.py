@@ -27,6 +27,16 @@ class SocialNetwork:
             print(f"Account '{username}' created for {email}.")
         except sqlite3.IntegrityError:
             print(f"Error: Username {username} is already taken.")
+            
+    def create_post(self, account_id, text):
+        self.cursor.execute("INSERT INTO Posts (account_id, content) VALUES (?, ?)", (account_id, text))
+        self.conn.commit()
+        print("Post created by " + string(account_id))
+        
+    def add_like(self, account_id, post_id):
+        self.cursor.execute("INSERT INTO Likes (account_id, post_id) VALUES (?, ?)", (account_id, post_id))
+        self.conn.commit()
+        print(string(account_id) + " liked the post " string(post_id))
 
     def list_users(self):
         self.cursor.execute("SELECT * FROM Users")
