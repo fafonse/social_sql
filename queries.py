@@ -27,6 +27,26 @@ class SocialNetwork:
             print(f"Account '{username}' created for {email}.")
         except sqlite3.IntegrityError:
             print(f"Error: Username {username} is already taken.")
+            
+    def create_post(self, account_id, text):
+        self.cursor.execute("INSERT INTO Posts (account_id, content) VALUES (?, ?)", (account_id, text))
+        self.conn.commit()
+        print("Post created by " + string(account_id))
+        
+    def add_like(self, account_id, post_id):
+        self.cursor.execute("INSERT INTO Likes (account_id, post_id) VALUES (?, ?)", (account_id, post_id))
+        self.conn.commit()
+        print(string(account_id) + " liked the post " string(post_id))
+        
+    def create_mute(self, muter_id, muted_id):
+        self.cursor.execute("INSERT INTO Mutes (muter_id, muting_id) VALUES (?, ?)", (muter_id, muted_id)
+        self.conn.commit()
+        print(string(muter_id) + " muted " string(muted_id))
+        
+    def create_follow(self, follower_id, followed_id):
+        self.cursor.execute("INSERT INTO Followers (follower_id, following_id) VALUES (?, ?)", (follower_id, followed_id)
+        self.conn.commit()
+        print(string(follower_id) + " followed " + string(followed_id)
 
     def list_users(self):
         self.cursor.execute("SELECT * FROM Users")
@@ -40,5 +60,10 @@ class SocialNetwork:
         for account in accounts:
             print(account)
 
+    def user_feed(self, account_id): # excludes mutes and orders by likes
+        self.cursor.execute("SELECT * FROM Posts JOIN Likes USING(post_id) ORDER BY COUNT(Likes.post_id) EXCEPT SELECT * From Posts NATURAL JOIN Mutes USING muting_id = post_id AND muter_id = (account_id) VALUES (?)", (account_id))
+        feed = self.cursor.fetchall()
+        return feed
+    
     def close(self):
         self.conn.close()
