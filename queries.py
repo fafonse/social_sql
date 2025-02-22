@@ -60,10 +60,53 @@ class SocialNetwork:
         for account in accounts:
             print(account)
 
-    def user_feed(self, account_id): # excludes mutes and orders by likes
-        self.cursor.execute("SELECT * FROM Posts JOIN Likes USING(post_id) ORDER BY COUNT(Likes.post_id) EXCEPT SELECT * From Posts NATURAL JOIN Mutes USING muting_id = post_id AND muter_id = (account_id) VALUES (?)", (account_id))
-        feed = self.cursor.fetchall()
-        return feed
+    def get_user_feed(self, username):
+        # First, find the user_id based on the username
+        self.cursor.execute('''
+            SELECT id FROM Accounts WHERE username = ?
+        ''', (username,))
+        user_account = self.cursor.fetchone()
+        
+        if user_account is None:
+            print(f"User with username '{username}' not found.")
+            return []
+
+        user_id = user_account[0]
+
+        # Fetch the posts from people the user is following and sort by likes, excluding muted users
+        self.cursor.execute('''
+            WITH Following AS (
+                -- Find who the user is following
+                SELECT following_id 
+                FROM Followers
+                WHERE follower_id = ?
+            ), Muted AS (
+                -- Find muted accounts by the user
+                SELECT muting_id
+                FROM Mutes
+                WHERE muter_id = ?
+            )
+            SELECT p.id, p.account_id, p.content, p.timestamp, COUNT(l.id) AS like_count
+            FROM Posts p
+            JOIN Likes l ON p.id = l.post_id
+            WHERE p.account_id IN (SELECT following_id FROM Following)
+            AND p.account_id NOT IN (SELECT muting_id FROM Muted)
+            GROUP BY p.id
+            ORDER BY like_count DESC, p.timestamp DESC
+        ''', (user_id, user_id))
+
+        posts = self.cursor.fetchall()
+
+        # Display the feed (post content with like count)
+        for post in posts:
+            post_id, account_id, content, timestamp, like_count = post
+            self.cursor.execute('''
+                SELECT username FROM Accounts WHERE id = ?
+            ''', (account_id,))
+            username = self.cursor.fetchone()[0]
+
+            print(f"Post by {username} at ({timestamp}) reading: {content}")
+            print(f"With like count: {like_count}\n")
     
     def close(self):
         self.conn.close()
