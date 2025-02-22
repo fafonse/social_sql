@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1178</width>
-    <height>556</height>
+    <width>1173</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,7 +196,7 @@
       <string>Generate Feed</string>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="Feed_output">
+    <widget class="QPlainTextEdit" name="user_feed">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -205,15 +205,18 @@
        <height>161</height>
       </rect>
      </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="usermanagement">
     <property name="geometry">
      <rect>
       <x>590</x>
-      <y>20</y>
+      <y>10</y>
       <width>561</width>
-      <height>191</height>
+      <height>461</height>
      </rect>
     </property>
     <property name="title">
@@ -291,6 +294,19 @@
      </property>
      <property name="placeholderText">
       <string>Username</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="TerminalOutput">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>541</width>
+       <height>271</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
